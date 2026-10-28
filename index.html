@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حاسبة المال والصرف</title>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3f1;--card:#fff;--ink:#12302b;--mute:#5d746f;--line:#d5e0dc;--inc:#16845b;--exp:#c2410c;--acc:#0f4c45;--accfg:#fff;--soft:#e2ece8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a18;--card:#14262a;--ink:#e6f2ee;--mute:#8fa9a3;--line:#24413d;--inc:#45c995;--exp:#f08a5d;--acc:#45c995;--accfg:#0d1a18;--soft:#1b3330}}
+:root[data-theme="dark"]{--bg:#0d1a18;--card:#14262a;--ink:#e6f2ee;--mute:#8fa9a3;--line:#24413d;--inc:#45c995;--exp:#f08a5d;--acc:#45c995;--accfg:#0d1a18;--soft:#1b3330}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Readex Pro",Tahoma,system-ui,sans-serif;line-height:1.6}
+main{max-width:520px;margin:0 auto;padding:16px}
+.hero{background:var(--acc);color:var(--accfg);border-radius:20px;padding:22px 20px}
+.hero small{opacity:.8;font-size:.9rem}
+.bal{font-size:2.6rem;font-weight:700;line-height:1.2;direction:ltr;text-align:right;margin:2px 0 14px}
+.bar{height:10px;border-radius:6px;background:rgba(255,255,255,.28);overflow:hidden;display:flex;flex-direction:row-reverse}
+.bar i{display:block;height:100%;background:var(--accfg);transition:width .4s}
+.row{display:flex;justify-content:space-between;margin-top:10px;font-size:.92rem}
+.row b{display:block;font-size:1.1rem;direction:ltr;text-align:right}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+h2{font-size:1.05rem;margin:0 0 12px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:12px;padding:4px;margin-bottom:12px}
+.seg button{border:0;background:none;color:var(--mute);font:inherit;padding:9px;border-radius:9px;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:700}
+input,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.go{width:100%;border:0;border-radius:12px;background:var(--acc);color:var(--accfg);font:inherit;font-weight:700;padding:13px;cursor:pointer}
+.cat{margin-bottom:10px}.cat div{display:flex;justify-content:space-between;font-size:.9rem}
+.cat span.t{display:block;height:8px;border-radius:5px;background:var(--soft);margin-top:4px;overflow:hidden}
+.cat span.t i{display:block;height:100%;background:var(--exp);border-radius:5px}
+.tx{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+.tx:first-of-type{border-top:0}
+.tx .m{flex:1;min-width:0}.tx .m b{display:block;font-weight:500}.tx .m small{color:var(--mute)}
+.amt{font-weight:700;direction:ltr}.amt.i{color:var(--inc)}.amt.e{color:var(--exp)}
+.del{border:0;background:none;color:var(--mute);font-size:1.3rem;cursor:pointer;padding:4px 8px}
+.empty{color:var(--mute);text-align:center;padding:14px 0;margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.top h1{font-size:1.2rem;margin:0}
+.top select{width:auto;margin:0;padding:7px 10px}
+.clr{background:none;border:0;color:var(--mute);font:inherit;text-decoration:underline;cursor:pointer;margin-top:12px}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><h1>حاسبة المال والصرف</h1>
+    </div>
+
+  <section class="hero">
+    <small>الرصيد المتبقي</small>
+    <div class="bal" id="bal">0</div>
+    <div class="bar"><i id="barI"></i></div>
+    <div class="row"><span>الدخل<b id="tin">0</b></span><span>المصروف<b id="tex">0</b></span></div>
+  </section>
+
+  <section class="card">
+    <h2>إضافة عملية</h2>
+    <div class="seg"><button id="bE" class="on" type="button">مصروف</button><button id="bI" type="button">دخل</button></div>
+    <input id="amt" type="number" inputmode="decimal" min="0" step="any" placeholder="المبلغ" aria-label="المبلغ">
+    <div class="two"><select id="cat" aria-label="التصنيف"></select><input id="note" type="text" placeholder="ملاحظة (اختياري)" aria-label="ملاحظة"></div>
+    <button class="go" id="add" type="button">إضافة</button>
+  </section>
+
+  <section class="card"><h2>المصروف حسب التصنيف</h2><div id="cats"></div></section>
+
+  <section class="card"><h2>العمليات</h2><div id="list"></div><button class="clr" id="clr" type="button">مسح كل العمليات</button></section>
+</main>
+<script>
+var CATS={e:["طعام","مواصلات","فواتير","تسوق","صحة","ترفيه","أخرى"],i:["راتب","عمل حر","هدية","أخرى"]};
+var type="e",data={tx:[],cur:"ر.س"};
+var $=function(id){return document.getElementById(id)};
+try{var s=localStorage.getItem("moneycalc");if(s){var p=JSON.parse(s);if(p&&p.tx){data=p}}}catch(e){}
+function save(){try{localStorage.setItem("moneycalc",JSON.stringify(data))}catch(e){}}
+function fmt(n){return Number(n).toLocaleString("en-US",{maximumFractionDigits:2})}
+function money(n){return fmt(n)+" "+data.cur}
+function fillCats(){$("cat").innerHTML=CATS[type].map(function(c){return"<option>"+c+"</option>"}).join("")}
+function setType(t){type=t;$("bE").className=t==="e"?"on":"";$("bI").className=t==="i"?"on":"";fillCats()}
+function render(){
+  var inc=0,exp=0,by={};
+  data.tx.forEach(function(x){if(x.t==="i"){inc+=x.a}else{exp+=x.a;by[x.c]=(by[x.c]||0)+x.a}});
+  $("bal").textContent=money(inc-exp);
+  $("tin").textContent=money(inc);$("tex").textContent=money(exp);
+  $("barI").style.width=inc>0?Math.min(100,exp/inc*100)+"%":(exp>0?"100%":"0%");
+  var keys=Object.keys(by).sort(function(a,b){return by[b]-by[a]});
+  $("cats").innerHTML=keys.length?keys.map(function(k){var pc=Math.round(by[k]/exp*100);return'<div class="cat"><div><span>'+k+'</span><span>'+money(by[k])+" ("+pc+'%)</span></div><span class="t"><i style="width:'+pc+'%"></i></span></div>'}).join(""):'<p class="empty">لا يوجد مصروف بعد. أضف أول عملية من الأعلى.</p>';
+  var rows=data.tx.slice().reverse();
+  $("list").innerHTML=rows.length?rows.map(function(x){var d=new Date(x.d).toLocaleDateString("ar",{day:"numeric",month:"short"});
+    return'<div class="tx"><div class="m"><b>'+x.c+(x.n?" - "+esc(x.n):"")+'</b><small>'+d+'</small></div><span class="amt '+x.t+'">'+(x.t==="i"?"+":"-")+fmt(x.a)+'</span><button class="del" data-id="'+x.id+'" aria-label="حذف">×</button></div>'}).join(""):'<p class="empty">لا توجد عمليات.</p>';
+  $("clr").style.display=rows.length?"":"none";
+}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+$("bE").onclick=function(){setType("e")};$("bI").onclick=function(){setType("i")};
+$("add").onclick=function(){
+  var a=parseFloat($("amt").value);
+  if(!(a>0)){$("amt").focus();return}
+  data.tx.push({id:Date.now(),t:type,a:a,c:$("cat").value,n:$("note").value.trim(),d:Date.now()});
+  $("amt").value="";$("note").value="";save();render();
+};
+$("list").onclick=function(e){var id=e.target.getAttribute("data-id");if(id){data.tx=data.tx.filter(function(x){return String(x.id)!==id});save();render()}};
+$("clr").onclick=function(){if(confirm("حذف كل العمليات؟")){data.tx=[];save();render()}};
+data.cur="د.إ";
+setType("e");render();
+</script>
+</body>
+</html>
